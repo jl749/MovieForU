@@ -75,7 +75,7 @@ def crawl_stroyline():
 
     CORPUS: List[str] = []
     CAST: List[Dict[str, str]] = []
-    for _ in range(9):
+    for _ in range(10):
         time.sleep(3)
         movieLink = driver.find_elements_by_css_selector('div.lister.list.detail.sub-list > div > div > div.lister-item-content > div > div.col-title > span > span:nth-child(2) > a')
         links = []
@@ -90,7 +90,7 @@ def crawl_stroyline():
             driver.execute_script(f'''window.open("{link}", "_blank")''')
             time.sleep(2)
             driver.switch_to.window(driver.window_handles[1])
-            time.sleep(3)
+            time.sleep(5)
 
             # collect storyline
             storyline = driver.find_element_by_css_selector(
@@ -118,12 +118,16 @@ def crawl_stroyline():
 
             castDict = dict()
             for a, c in zip(actors, characters):
+                c = re.sub('\s\(.+\)', '', c)
                 castDict[c] = a
             CAST.append(castDict)
 
             driver.close()  # close current tab
         driver.switch_to.window(driver.window_handles[0])
-        driver.find_element_by_css_selector('#main > div > div.desc > a').click()
+        try:
+            driver.find_element_by_css_selector('#main > div > div.desc > a.lister-page-next.next-page').click()
+        except Exception:
+            print("last page reached")
     save_obj(CORPUS, "StoryLine")
     save_obj(CAST, "Cast")
 
