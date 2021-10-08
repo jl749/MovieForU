@@ -132,6 +132,24 @@ def crawl_stroyline():
     save_obj(CAST, "Cast")
 
 
+def crawl_title():
+    driver = webdriver.Firefox()
+    driver.get('https://www.imdb.com/search/title/?groups=top_1000&sort=user_rating,desc&count=100&view=simple')
+
+    all_titles = []
+    while 1:
+        time.sleep(2)
+        titles = driver.find_elements_by_css_selector(
+            'div.lister-item-content > div > div.col-title > span > span:nth-child(2)')
+        all_titles.extend([title.text for title in titles])
+        try:
+            driver.find_element_by_css_selector('#main > div > div.desc > a.lister-page-next.next-page').click()
+        except Exception:
+            break
+    save_obj(all_titles, "TITLEs")
+
+
 if __name__ == '__main__':
     # crawl_imgSet()
-    crawl_stroyline()
+    # crawl_stroyline()
+    crawl_title()
