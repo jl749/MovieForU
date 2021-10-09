@@ -75,6 +75,7 @@ def crawl_stroyline():
 
     CORPUS: List[str] = []
     CAST: List[Dict[str, str]] = []
+    GENREs: List[List[str]] = []
     for _ in range(10):
         time.sleep(3)
         movieLink = driver.find_elements_by_css_selector('div.lister.list.detail.sub-list > div > div > div.lister-item-content > div > div.col-title > span > span:nth-child(2) > a')
@@ -99,9 +100,14 @@ def crawl_stroyline():
 
             ### REGEX ###
             storyline = re.sub("\.\s—.+$", ".", storyline)
+            storyline = re.sub('\s?—.*\S+@\S+', ".", storyline)
             print(storyline)
 
             CORPUS.append(storyline)
+            genreTags = driver.find_elements_by_css_selector('span.ipc-chip__text')[:5]
+            movie_tags = [aTag.get_attribute('innerHTML') for aTag in genreTags]
+            print(movie_tags)
+            GENREs.append(movie_tags)
             time.sleep(2)
 
             # collect CAST dict
@@ -130,6 +136,7 @@ def crawl_stroyline():
             print("last page reached")
     save_obj(CORPUS, "StoryLine")
     save_obj(CAST, "Cast")
+    save_obj(GENREs, "Genres")
 
 
 def crawl_title():
@@ -151,5 +158,5 @@ def crawl_title():
 
 if __name__ == '__main__':
     # crawl_imgSet()
-    # crawl_stroyline()
-    crawl_title()
+    crawl_stroyline()
+    # crawl_title()
